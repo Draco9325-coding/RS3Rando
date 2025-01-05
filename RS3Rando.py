@@ -1,8 +1,7 @@
 import wx
-import os
 import random
-from datetime import datetime
 
+from datetime import datetime
 from backend.openrom import OpenFile
 from backend.randomain import Randomization
 
@@ -27,7 +26,7 @@ class MainWindow(wx.Frame):
         panel.SetBackgroundColour(wx.Colour(142, 121, 195))
 
         icon = wx.Icon()        # App icon
-        icon.CopyFromBitmap(wx.Bitmap("appicon.xpm", wx.BITMAP_TYPE_ANY))
+        icon.CopyFromBitmap(wx.Bitmap("appicon.ico", wx.BITMAP_TYPE_ANY))
         self.SetIcon(icon)
 
             # This is all fine in the main file.

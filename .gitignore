@@ -1,0 +1,5 @@
+build/
+dist/
+.git/
+main.spec
+RS3Rando.spec
