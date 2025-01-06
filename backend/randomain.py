@@ -74,6 +74,9 @@ class Randomization():
         f.write(headStr2)
         f.write(headStr3)
 
+        f.write("SL = Slash (Swords)\nHI = Hit (Axe/Mace)\nPI = Pierce (Epee/Lance)\nSH = Shot (Bow)\n\n")
+        f.write("Stats listed here are BEFORE Star Sign/Weapon Specialty stat modifiers.\n\
+\t\tTHEY WILL DIFFER SLIGHTLY IN GAME\n\n\n")
         while x < charCount:
 
             bBuf.clear()
