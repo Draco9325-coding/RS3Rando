@@ -10,3 +10,6 @@ class profRando():
 
     def profRando():
         print()
+
+    def main():
+        print()
