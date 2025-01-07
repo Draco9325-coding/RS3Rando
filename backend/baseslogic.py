@@ -103,6 +103,7 @@ class BaseRando():
                 k += 1
                 fileIndex += 48
             # Again, hardcoding because I'm lazy atm #!TODO Convert from ints to use bytes from the file
+                        #* Disregard the TODO for now, address 0x5E92E has the code that reads the stats, not sure what to do from there
 
             return self.fileEditObj
 
