@@ -8,7 +8,7 @@ class GrowthsRando():
 
     # Proficiency Growths Randomization; Uses indexes 7~9 of the options list
     def handleGrowthsRando(self, growthsOpt):
-        fileIndex = 4075967
+        fileIndex = 4075967         # File index (in base-10) for Julian's growths, at 0x3E31BF, 16 bytes long per character
 
         if growthsOpt[1] == 0:
             return self.fileEditObj

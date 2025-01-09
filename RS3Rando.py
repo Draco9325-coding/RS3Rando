@@ -20,7 +20,7 @@ class MainWindow(wx.Frame):
         self.fileObj = ''
         random.seed(datetime.now().timestamp())
 
-        wx.Frame.__init__(self, parent, title=title, size=(775,600), style=style)   # Override the default __init__
+        wx.Frame.__init__(self, parent, title=title, size=(825,600), style=style)   # Override the default __init__
 
         panel = wx.Panel(self, wx.ID_ANY)  # Panel to allow the window look good regardless of platform
         panel.SetBackgroundColour(wx.Colour(142, 121, 195))
@@ -79,6 +79,7 @@ class MainWindow(wx.Frame):
         pathName = wx.StaticText(panel, label="File Path:")     # Text object to label the filepath text object
         pathName.SetBackgroundColour(wx.Colour(142, 121, 195))  # Match the panel color. Looks ugly otherwise
         self.textFileObj = wx.TextCtrl(panel, style=wx.TE_READONLY) # Disable the ability to edit the filepath textfield
+        self.textFileObj.SetToolTip('Go to "File > Open" and choose the ROM to randomize')
 
             # Seed objects
         seedName = wx.StaticText(panel, label="Seed:")      
@@ -91,8 +92,8 @@ class MainWindow(wx.Frame):
             # Line to separate the two text boxes from the settings
         headerLine= wx.StaticLine(panel, style=wx.LI_HORIZONTAL, size=(700, 1))
 
-                #  **************   Randomization Options   **************  #
 
+                #  **************   Randomization Options   **************  #
 
             # Create the options for personal base randomization
         listStatOptions = ['Do Not Randomize', 'Shuffle Personal Stats', 'Randomize Stats']
@@ -120,7 +121,7 @@ class MainWindow(wx.Frame):
 
 
         self.statsOptions.SetItemToolTip(0, "Do not change personal stats")
-        self.statsOptions.SetItemToolTip(1, "This setting is currently not supported")
+        self.statsOptions.SetItemToolTip(1, "Shuffle personal stats. I.e. Str value moves to Int")
         self.statsOptions.SetItemToolTip(2, "Randomize comepletely within the specified range")
             
             # Options for growths randomization
@@ -133,17 +134,45 @@ class MainWindow(wx.Frame):
         growthChance = wx.StaticText(panel, label="Chance:")
         self.growthsChanceBtn = wx.SpinCtrl(panel, min=1, max=100, initial=50)
         self.growthsChanceBtn.Enable(False)
-        self.growthsChanceBtn.SetToolTip("Percent chance of a proficiency having a growth above 0")
+        self.growthsChanceBtn.SetToolTip("Percent chance of a proficiency having a growth above 0\n\
+If a growth does not roll successfully, it WILL be set to 0\n\
+A growth of 0 does NOT mean it will not grow, it only reduces the rate of growth")
         growthMax = wx.StaticText(panel, label="Max: ")
         self.growthsMaxBtn = wx.SpinCtrl(panel, min=1, max=7, initial=3)
         self.growthsMaxBtn.Enable(False)
         
-        self.growthsMaxBtn.SetToolTip("Maximum growth allowed in a proficiency")
+        self.growthsMaxBtn.SetToolTip("Maximum growth allowed in a proficiency\n\
+A higher growth means a faster rate of leveling")
 
             #!TODO Options for Base HP/LP randomization
 
-            #!TODO Options for Proficiency bases randomization
+            # Options for Proficiency bases randomization
                 #Internal checkbox for magic; Need to make magicks exclusive from each other
+        listProfOptions = ['Do Not Randomize','Shuffle Proficiencies', 'Randomize Proficiencies']
+        self.profOptions = wx.RadioBox(panel, wx.ID_ANY, "Weapon Proficiency", wx.DefaultPosition,
+                       wx.DefaultSize, listProfOptions, 1, wx.RA_SPECIFY_COLS)
+        #self.profOptions.Bind(wx.EVT_RADIOBOX,self.isProfRandoOn)
+
+        profChanceLabel = wx.StaticText(panel, label="Chance: ")
+        self.profChanceBtn = wx.SpinCtrl(panel, min=0, max=100, initial=30)
+        self.profChanceBtn.Enable(False)
+        self.profChanceBtn.SetToolTip("The chance a proficiency base is above 0")
+        profMaxLabel = wx.StaticText(panel, label="Max: ")
+        self.profMaxBtn = wx.SpinCtrl(panel, min=1, max=31, initial=5)
+        self.profMaxBtn.Enable(False)
+        self.profMaxBtn.SetToolTip("The highest a proficiency base can roll")
+        self.profGrow = wx.CheckBox(panel, -1, "Grow outside of party")
+        self.profGrow.SetToolTip("Add a chance for a proficiency to grow while the party member is\n\
+outside the party. \nBy default, this flag is not applied to randomized proficiency bases")
+        
+        # Spinbox for the checkbox
+        # Magic options?
+        
+
+        self.profOptions.SetItemToolTip(0, "Do not change proficiency bases")
+        self.profOptions.SetItemToolTip(1, "Shuffle proficiency bases I.e. 5 Sword rank becomes 5 Kung Fu")
+        self.profOptions.SetItemToolTip(2, "Completely randomize weapon proficiency bases (DOES NOT REFER TO PERSONAL STATS)")
+
 
             #!TODO Growth Type, Spark Type, Special Weapon, Inherit Magic
 
@@ -177,6 +206,7 @@ class MainWindow(wx.Frame):
         bodySizer = wx.GridBagSizer(vgap=10, hgap=10)   # Main body; Will contain other sub-sizers
         basesOptSizer = wx.GridBagSizer(vgap=7, hgap=2)
         growthsOptSizer = wx.GridBagSizer(vgap=5, hgap=5)
+        profOptSizer = wx.GridBagSizer(vgap=7, hgap=2)
 
             # Set up the filepath sizer
         pathSizer.Add((95,1), proportion=0)
@@ -192,7 +222,6 @@ class MainWindow(wx.Frame):
         seedSizer.Add((75,1), proportion=0)
 
 
-
             # Set up the personal stats sizer
         basesOptSizer.Add(self.statsOptions, pos=(0,0), span=(1,4), flag=wx.LEFT, border=1)
 
@@ -206,8 +235,6 @@ class MainWindow(wx.Frame):
         basesOptSizer.Add(baseVar, pos=(2, 2), flag=wx.LEFT | wx.ALIGN_CENTER, border=6)
         basesOptSizer.Add(self.basesVarBtn, pos=(2,3), flag=wx.LEFT | wx.RIGHT, border=0)
 
-
-
             # Set up the growths sizer
         growthsOptSizer.Add(self.growthsOptions, pos=(0,0), span=(1, 2), flag=wx.ALL, border=1)
         growthsOptSizer.Add(growthChance, pos=(1, 0), flag=wx.LEFT | wx.ALIGN_CENTER, border=18)
@@ -215,10 +242,20 @@ class MainWindow(wx.Frame):
         growthsOptSizer.Add(growthMax, pos=(2, 0), flag=wx.LEFT | wx.ALIGN_CENTER, border=45)
         growthsOptSizer.Add(self.growthsMaxBtn, pos=(2,1), flag=wx.ALL, border=2)
 
+            # Set up the proficiency sizer
+        profOptSizer.Add(self.profOptions, pos=(0,0), span=(1,2), flag=wx.LEFT, border=1)
+        profOptSizer.Add(profChanceLabel, pos=(1,0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
+        profOptSizer.Add(self.profChanceBtn, pos=(1,1), flag=wx.LEFT | wx.RIGHT, border=1)
+        profOptSizer.Add(profMaxLabel, pos=(2,0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
+        profOptSizer.Add(self.profMaxBtn, pos=(2,1), flag=wx.LEFT | wx.RIGHT, border=1)
+
+        profOptSizer.Add(self.profGrow, pos=(3, 0), span=(1,2))
+
             # Set up the body sizer
         bodySizer.Add(basesOptSizer, pos=(0,0))
         bodySizer.Add(growthsOptSizer, pos=(1, 0), flag=wx.TOP, border=5)
         bodySizer.Add(self.tatyanaCheck, pos=(2, 0), flag=wx.LEFT, border=15)
+        bodySizer.Add(profOptSizer, pos=(0, 1), flag=wx.LEFT, border=40)
 
         bodySizer.Add(theMagicButton, pos=(3,5))
 
@@ -254,10 +291,20 @@ class MainWindow(wx.Frame):
 
         self.filename = dlg.GetFilename()
         self.dirname = dlg.GetDirectory()
-            
-        file1 = OpenFile(self.filename)  # Call the backend to open the ROM file and get the ROM data
 
-        self.fileObj = file1.getData()          # Receive the file data from the openrom class
+        try:
+            file1 = OpenFile(self.dirname +'\\'+ self.filename)  # Call the backend to open the ROM file and get the ROM data
+        except:
+            dialogue = wx.MessageDialog(self, 'Incompatible ROM selected, please choose\n\
+a v1.1 JP, Mana Sword EN, or Magno ES ROM.', 'File Error', style=wx.OK | wx.ICON_ERROR)
+            dialogue.ShowModal()
+            dialogue.Destroy()
+            return
+            print()
+
+        self.getromdata = file1.getData()          # Receive the file data from the openrom class
+
+        self.fileObj = self.getromdata[0]
         
         print("Received", type(self.fileObj),"object from backend.")    # Testing if the ROM was properly opened
         print("The ROM is" , len(self.fileObj)/1024,"Kilobytes")        # It should read as 4096 Kilobytes
@@ -363,7 +410,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         self.save_path = fdlg.GetPath()
 
         print("Calling the randomization class")
-        randoObj = Randomization(self.fileObj)
+        randoObj = Randomization(self.fileObj, self.getromdata[1])
         
         # This sends the file data to randomizationlogic.py, which then reads the bytes object, which is
         #    immutable, and converts it to a bytestream object, which is mutable.
@@ -391,7 +438,7 @@ persists, please inform Draco9325.', 'Logic Error', style=wx.OK | wx.ICON_ERROR)
 
             dialogue = wx.MessageDialog(self, 'Success!\n\n\
 ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=wx.YES_NO | wx.ICON_INFORMATION)
-            if dialogue.ShowModal() != wx.ID_YES:            # IT'S SO UGLY!!!
+            if dialogue.ShowModal() != wx.ID_YES:            # IT'S SO UGLY!!! WHY DO I HAVE TO REMOVE THE SPACES!!
                 return
             
             writelist = [chosenOptions[0], chosenOptions[1], chosenOptions[2], chosenOptions[7]]
@@ -399,7 +446,7 @@ ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=
             
             dialogue = wx.MessageDialog(self, 'Changelog saved next to ROM.', 'File Saved', style=wx.OK | wx.ICON_INFORMATION)
             dialogue.ShowModal()
-            dialogue.Destroy()
+            dialogue.Destroy()      # End of process, inform user of changelog.
 
 
         except Exception as e:
@@ -414,5 +461,5 @@ ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=
 if __name__=='__main__':
     app = wx.App(False)
     frame = MainWindow(None, "RS3Rando", style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
-    frame.Show()
+    frame.Show()            # I seriously think there's a better way to initialize the window. oh well
     app.MainLoop()

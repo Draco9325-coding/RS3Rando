@@ -5,12 +5,12 @@ from backend.growthslogic import GrowthsRando
 class Randomization():
     
     # ****************************** Initialization method ****************************** #
-    def __init__(self, fileBytesObj : bytes):
+    def __init__(self, fileBytesObj : bytes, romVer):
 
         try:
                 # Convert from <bytes> to <bytearray>, allowing it to be changed
             self.fileEditObj = bytearray(b'')
-
+            self.romVer = romVer
                 #!TODO Make this array read from an external file to support custom characters.
                     # How that will be implemented, not too sure
 

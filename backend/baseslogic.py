@@ -3,7 +3,7 @@ import random
 class BaseRando():
 
     def __init__(self, fileObj: bytearray):
-        self.fileEditObj = fileObj
+        self.fileEditObj = fileObj          # Give the method access to the ROM data
 
 
 
@@ -15,9 +15,9 @@ class BaseRando():
         if splitTatyana:
             charCount = 41      # Tatyana you devil chilf
 
-        while x < charCount:
+        while x < charCount:    # Used to be a static 32, now a variable to account for Tatyana
         
-            statBuffer.clear()
+            statBuffer.clear()      # Make sure we have a fresh list each time
         
             for y in range(7):      # Grab the stats
                 statBuffer.append(self.fileEditObj[fileIndex+y])
@@ -38,11 +38,13 @@ class BaseRando():
 
         return self.fileEditObj
 
+
     # Personal Bases Randomization; Uses indexes 1~6 of the options list
     def handlePersonalBasesRando(self, basesOpt):
 
         fileIndex = 4064774     #* Hardcoding with int literals because I can't be bothered to use bytes atm
-                                    # This is the index for Character 0x00's personal stat's (By default, Julian)
+                            # This is the index for Julian's personal stat's stored at 0x3E0602, 48 bytes long per character
+                            # Uhh, I don't think I can change to refer to the ROMs pointers? It's weird, look at 0x5E92E, that reads the stats
 
             # Get the random personal bases
         if basesOpt[1] == 0:
@@ -51,11 +53,11 @@ class BaseRando():
         if basesOpt[1] == 1:
             return self.basesShuffle(fileIndex, basesOpt[0])      # Call to other method to shuffle bases instead
         
-        k = 0
+        k = 0               # Why did I choose k when I made this?
         totalcheck = 0
         charCount = 32
 
-        splitTatyana = basesOpt[0]
+        splitTatyana = basesOpt[0]      # Getting the options into a variable. I could just refer to the list, but eh.
         randMin = basesOpt[2]
         randMax = basesOpt[3]
 
@@ -66,14 +68,14 @@ class BaseRando():
         if splitTatyana == True:
             charCount = 41
 
-        print("The bases options are:")
+        print("The bases options are:")     # I will leave this here for debugging if necessary
         for thing in basesOpt:
             print(thing)
 
 
 
         try:
-            while k  < charCount:                  # Cover all characters
+            while k  < charCount:       # Used to be a static 32, now a variable to account for Tatyana
 
                 totalcheck = 0              # Reset BST value
                 
@@ -100,8 +102,8 @@ class BaseRando():
 
                 print("Char",k,"randomized")
 
-                k += 1
-                fileIndex += 48
+                k += 1      # Do not loop infinitely
+                fileIndex += 48     # Move to the next character
             # Again, hardcoding because I'm lazy atm #!TODO Convert from ints to use bytes from the file
                         #* Disregard the TODO for now, address 0x5E92E has the code that reads the stats, not sure what to do from there
 

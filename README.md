@@ -2,7 +2,7 @@
 
 RS3Rando is a (Currently very WIP) randomizer for the Super Famicom title "Romancing SaGa 3."
 
-## Supports the following
+## Features the following
 
 * Shuffle or Randomize personal stats
 
@@ -28,6 +28,21 @@ Add support for more options, such as:
 * Chest Randomization
 * Possibly more, depending on my understanding of Romancing SaGa 3
 
+
+## Important Notes
+
+* Mana Sword's EN and Magno's ES translations vs JP
+
+Comparing the differences between Magno's TL and the JP ROM, there appears to
+be little, if any, difference in where the data that is modified is stored. This
+makes the Spanish fantranslation readily compatible with the randomizer.
+
+For Mana Sword's EN translation, it is necessary to use a version of the ROM with a
+200-byte empty header, otherwise attempts to load the game, even when not randomized,
+will fail.
+
+I have added (or definitely plan to add) a method to check for this discrepency in
+data.
 
 # Usage
 
