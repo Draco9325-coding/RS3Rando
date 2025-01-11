@@ -299,12 +299,11 @@ outside the party. \nBy default, this flag is not applied to randomized proficie
 a v1.1 JP, Mana Sword EN, or Magno ES ROM.', 'File Error', style=wx.OK | wx.ICON_ERROR)
             dialogue.ShowModal()
             dialogue.Destroy()
-            return
-            print()
+            return            
 
         self.getromdata = file1.getData()          # Receive the file data from the openrom class
 
-        self.fileObj = self.getromdata[0]
+        self.fileObj = self.getromdata[0]          # Pull ROM data from the data returned
         
         print("Received", type(self.fileObj),"object from backend.")    # Testing if the ROM was properly opened
         print("The ROM is" , len(self.fileObj)/1024,"Kilobytes")        # It should read as 4096 Kilobytes
@@ -345,7 +344,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
 
     def isBasesRandoOn(self, e):
         print(e.GetSelection())
-        if(e.GetSelection() == 2):
+        if(e.GetSelection() == 2):  # One could say calling a specific method on undetermined object e is dangerous, I say "Skate or Die"
             self.basesMinBtn.Enable(True)
             self.basesMaxBtn.Enable(True)
             self.basesTotBtn.Enable(True)
@@ -410,7 +409,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         self.save_path = fdlg.GetPath()
 
         print("Calling the randomization class")
-        randoObj = Randomization(self.fileObj, self.getromdata[1])
+        randoObj = Randomization(self.fileObj, self.getromdata[1])  # Modified to send ROM version.
         
         # This sends the file data to randomizationlogic.py, which then reads the bytes object, which is
         #    immutable, and converts it to a bytestream object, which is mutable.
@@ -423,9 +422,9 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         print("Sending a list of the settings")
         try:
             randoObj.main(chosenOptions)
-        except:
+        except Exception as e:
             dialogue = wx.MessageDialog(self, 'Error occured when randomizing, if the issue\n\
-persists, please inform Draco9325.', 'Logic Error', style=wx.OK | wx.ICON_ERROR)
+persists, please inform Draco9325.\n'+str(e), 'Logic Error', style=wx.OK | wx.ICON_ERROR)
             dialogue.ShowModal()
             dialogue.Destroy()
             return
@@ -450,7 +449,8 @@ ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=
 
 
         except Exception as e:
-            dialogue = wx.MessageDialog(self, 'Critical Error\n\nError writing to '+self.save_path, 'File Error', style=wx.OK | wx.ICON_ERROR)
+            dialogue = wx.MessageDialog(self, 'Critical Error\n\nError writing to '+self.save_path+'\n'+e,
+                                        'File Error', style=wx.OK | wx.ICON_ERROR)
             print(e)
             dialogue.ShowModal()
             dialogue.Destroy()

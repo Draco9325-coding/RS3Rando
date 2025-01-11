@@ -40,11 +40,14 @@ class BaseRando():
 
 
     # Personal Bases Randomization; Uses indexes 1~6 of the options list
-    def handlePersonalBasesRando(self, basesOpt):
+    def handlePersonalBasesRando(self, basesOpt, romVer):
 
         fileIndex = 4064774     #* Hardcoding with int literals because I can't be bothered to use bytes atm
                             # This is the index for Julian's personal stat's stored at 0x3E0602, 48 bytes long per character
-                            # Uhh, I don't think I can change to refer to the ROMs pointers? It's weird, look at 0x5E92E, that reads the stats
+                            # Uhh, I don't think I can change to refer to the ROMs pointers? It's weird, look at 0x5E92E, it reads the stats
+
+        if romVer == 1: 
+            fileIndex += 512    # Move the index 0x200 bytes forward because of the header if Mana Sword EN
 
             # Get the random personal bases
         if basesOpt[1] == 0:
@@ -80,7 +83,7 @@ class BaseRando():
                 totalcheck = 0              # Reset BST value
                 
                 #print("Buffer cleared")
-                for j in range(7):
+                for j in range(7):      # Really? j?
                 
                     newStat = random.randint(randMin, randMax)    # Seems a bit odd to do this, but you'll see why
                     
@@ -115,6 +118,6 @@ class BaseRando():
 
 
 
-    def main(self, optlist: list, seed):
+    def main(self, optlist: list, seed, romVer):
         random.seed(seed)
-        return self.handlePersonalBasesRando(optlist)
+        return self.handlePersonalBasesRando(optlist, romVer)

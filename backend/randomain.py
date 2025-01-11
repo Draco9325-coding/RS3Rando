@@ -10,7 +10,8 @@ class Randomization():
         try:
                 # Convert from <bytes> to <bytearray>, allowing it to be changed
             self.fileEditObj = bytearray(b'')
-            self.romVer = romVer
+            self.romVer = romVer    # Used to change where data is from, depends on ROM version
+                
                 #!TODO Make this array read from an external file to support custom characters.
                     # How that will be implemented, not too sure
 
@@ -31,8 +32,8 @@ class Randomization():
 
     def writeToSFC(self, fileName):
         try:
-            newFileName = fileName[:-4] + ".sfc"
-            newFileObj = bytes(self.fileEditObj)
+            newFileName = fileName[:-4] + ".sfc"    # Not sure if it's fully needed, but ensuring the 
+            newFileObj = bytes(self.fileEditObj)    # file has the correct extension shouldn't hurt
             with open(newFileName, "wb") as writeFile:
                 writeFile.write(newFileObj)
         except Exception as e:
@@ -56,6 +57,11 @@ class Randomization():
         if writeList[1] == True:
             charCount = 41
         
+        if self.romVer == 1:
+            basesIndex += 512
+            growthsIndex += 512
+        
+        
         headStr1 = "Seed: " + str(writeList[0]) + "\n"
         if writeList[2] == 0:
             headStr2 = "No Personal Stat Randomization\n"
@@ -74,7 +80,8 @@ class Randomization():
         f.write(headStr2)
         f.write(headStr3)
 
-        f.write("SL = Slash (Swords)\nHI = Hit (Axe/Mace)\nPI = Pierce (Epee/Lance)\nSH = Shot (Bow)\n\n")
+        f.write("SL = Slash (Swords)\tHI = Hit (Axe/Mace)\tPI = Pierce (Epee/Lance)\tSH = Shot (Bow)\tKG = Kung Fu\tSup = Support\n\
+WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
         f.write("Stats listed here are BEFORE Star Sign/Weapon Specialty stat modifiers.\n\
 \t\tTHEY WILL DIFFER SLIGHTLY IN GAME\n\n\n")
         while x < charCount:
@@ -140,7 +147,7 @@ class Randomization():
         bases = BaseRando(self.fileEditObj)
         growths = GrowthsRando(self.fileEditObj)
 
+        # romVer = 0 for JP, romVer = 1 for EN, romVer = 2 for ES
 
-
-        self.fileEditObj = bases.main(basesRando, randoOpt[0])
-        self.fileEditObj = growths.main(growthsRando, randoOpt[0])
+        self.fileEditObj = bases.main(basesRando, randoOpt[0], self.romVer)
+        self.fileEditObj = growths.main(growthsRando, randoOpt[0], self.romVer)
