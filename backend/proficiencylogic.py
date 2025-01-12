@@ -3,12 +3,47 @@ import random
     # Oh man this one is MESSY
     # The amount of mental visualization on how to do this was insane. Send help. I'm losing my mind.
 
+    #!TODO Implement way to prevent shuffling from heavily biasing wind magic, preferably reading inherent magic byte
+
 class ProfRando():
 
     def __init__(self, fileObj: bytearray):
         self.fileEditObj = fileObj
 
     def profShuffle(self, fileIndex, splitTatyana):
+        buffer = []
+        charcount = 32
+        count = 0
+
+        if splitTatyana:
+            charcount = 41
+
+        while count < charcount:
+            buffer.clear()
+
+            for x in range(8):
+                buffer.append(self.fileEditObj[fileIndex + x])
+
+            random.shuffle(buffer)
+
+            for y in range(8):
+                doesGrow = buffer[y] >=128
+                if (y != 5 and y !=6) and (buffer[y] >= 32):
+                    buffer[y] = buffer[y] % 32
+                    if doesGrow:
+                        buffer[y] = buffer[y] + 128
+
+                self.fileEditObj[fileIndex + y] = buffer[y]
+
+                if count == 18 and not splitTatyana:
+                    tatyanaIndex = fileIndex + 720      # Tatyana Time (the thrilling trilogy finale)
+                    for i in range(8):
+                        self.fileEditObj[tatyanaIndex + y] = buffer[y]
+                        tatyanaIndex += 48
+
+            fileIndex += 48
+            count += 1
+
         return self.fileEditObj
 
     def handleProfRando(self, profOpt, romVer):
@@ -72,7 +107,7 @@ class ProfRando():
                 self.fileEditObj[fileIndex + i] = newProf   # Finally, assign the value
 
                     # Tatyana time (the trilogy pt 1)
-                if i == 18 and not profOpt[0]:
+                if count == 18 and not profOpt[0]:
                     tatyanaIndex = fileIndex + 720
                     for x in range(8):
                         self.fileEditObj[tatyanaIndex + i] = newProf
@@ -92,7 +127,7 @@ class ProfRando():
                     else:
                         doesGrow = False
 
-                    roll = random.randrange(0, 100)
+                    roll = random.randrange(0, 100)     # Roll if magic gets a base
                     if roll > magChance:
                         newProf = 0
                     else:
@@ -115,7 +150,7 @@ class ProfRando():
                     self.fileEditObj[fileIndex + i] = newProf   # Finally, assign the value
 
                         # Tatyana time (the trilogy pt 2)
-                    if i == 18 and not profOpt[0]:
+                    if count == 18 and not profOpt[0]:
                         tatyanaIndex = fileIndex + 720
                         for y in range(8):
                             self.fileEditObj[tatyanaIndex + i] = newProf
