@@ -1,6 +1,7 @@
 import random
 from backend.baseslogic import BaseRando
 from backend.growthslogic import GrowthsRando
+from backend.proficiencylogic import ProfRando
 
 class Randomization():
     
@@ -54,12 +55,16 @@ class Randomization():
         gBuf = []
         growthsIndex = 4075967
 
+        pBuf = []
+        proficiencyIndex = 4064781
+
         if writeList[1] == True:
             charCount = 41
         
         if self.romVer == 1:
             basesIndex += 512
             growthsIndex += 512
+            proficiencyIndex += 512
         
         
         headStr1 = "Seed: " + str(writeList[0]) + "\n"
@@ -71,14 +76,22 @@ class Randomization():
             headStr2 = "Personal Stats: Randomized\n"
 
         if writeList[3] == 0:
-            headStr3 = "No Growth Randomization\n\n\n"
+            headStr3 = "No Growth Randomization\n"
         else:
-            headStr3 = "Proficiency Growths: Randomized\n\n\n"
+            headStr3 = "Proficiency Growths: Randomized\n"
+
+        if writeList[4] == 0:
+            headStr4 = "No Proficiency Randomization\n\n\n"
+        elif writeList[4] == 1:
+            headStr4 = "Proficiency Bases: Shuffled\n\n\n"
+        else:
+            headStr4 = "Proficiency Bases: Randomized\n\n\n"
 
         f.write("RS3 Randomized Changelog\n\n")
         f.write(headStr1)
         f.write(headStr2)
         f.write(headStr3)
+        f.write(headStr4)
 
         f.write("SL = Slash (Swords)\tHI = Hit (Axe/Mace)\tPI = Pierce (Epee/Lance)\tSH = Shot (Bow)\tKG = Kung Fu\tSup = Support\n\
 WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
@@ -104,12 +117,15 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
                 if j == 11:
                     continue
                 gBuf.append(self.fileEditObj[growthsIndex + j])
+
+            for k in range(8):
+                pBuf.append(self.fileEditObj[proficiencyIndex + k])
             
             bStr =  f"       {bBuf[0]:<5d}{bBuf[1]:<5d}{bBuf[2]:<5d}{bBuf[3]:<5d}{bBuf[4]:<5d}{bBuf[5]:<5d}{bBuf[6]:<5d}\n"
             gStr =  f"         {gBuf[0]:<4d}{gBuf[1]:<4d}{gBuf[2]:<4d}{gBuf[3]:<4d}\
 {gBuf[4]:<4d}{gBuf[5]:<4d}{gBuf[6]:<4d}{gBuf[7]:<4d}{gBuf[8]:<4d}{gBuf[9]:<4d}{gBuf[10]:<4d}\
 {gBuf[11]:<5d}{gBuf[12]:<4d}{gBuf[13]:<4d}{gBuf[14]:<4d}\n"
- 
+            pStr =  f"               {pBuf[0]:<5d}{pBuf[1]:<5d}{pBuf[2]:<5d}{pBuf[3]:<5d}{pBuf[4]:<5d}{pBuf[5]:<5d}{pBuf[6]:<5d}{pBuf[7]:<5d}\n"
             
             f.write("Bases: STR  DEX  AGI  CON  INT  WIL  CHA\n")
             f.write(bStr)
@@ -117,8 +133,12 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
             f.write("Growths: SL  HI  PI  SH  KG  WI  FI  EA  WA  SU  MO  Sup  TP  MP  HP\n")
             f.write(gStr)
 
+            f.write("Proficiencies: SL   HI   PI   SH   KG   Mag1 Mag2 Sup\n")
+            f.write(pStr)
+
             basesIndex += 48
             growthsIndex += 16
+            proficiencyIndex += 48
 
             f.write("\n\n\n")
 
@@ -134,6 +154,7 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
         # Split the options given into separate lists
         basesRando = []
         growthsRando = []
+        profsRando = []
         
         for i in randoOpt[1:7]:
             basesRando.append(i)
@@ -142,12 +163,18 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
         for j in randoOpt[7:10]:
             growthsRando.append(j)
         
+        profsRando.append(randoOpt[1])
+        for k in randoOpt[10:17]:
+            profsRando.append(k)
+
         
             # Call methods that handle the individual options
         bases = BaseRando(self.fileEditObj)
         growths = GrowthsRando(self.fileEditObj)
+        proficiencies = ProfRando(self.fileEditObj)
 
         # romVer = 0 for JP, romVer = 1 for EN, romVer = 2 for ES
 
-        self.fileEditObj = bases.main(basesRando, randoOpt[0], self.romVer)
-        self.fileEditObj = growths.main(growthsRando, randoOpt[0], self.romVer)
+        self.fileEditObj = bases.main(basesRando, self.romVer)
+        self.fileEditObj = growths.main(growthsRando, self.romVer)
+        self.fileEditObj = proficiencies.main(profsRando, self.romVer)

@@ -118,6 +118,6 @@ class BaseRando():
 
 
 
-    def main(self, optlist: list, seed, romVer):
-        random.seed(seed)
+    def main(self, optlist: list, romVer):
+        #random.seed(seed)
         return self.handlePersonalBasesRando(optlist, romVer)

@@ -102,11 +102,11 @@ class MainWindow(wx.Frame):
         self.statsOptions.Bind(wx.EVT_RADIOBOX,self.isBasesRandoOn)
 
             # Spinboxes for min and max range of bases rando
-        baseMin = wx.StaticText(panel, label="Min: ")
+        baseMin = wx.StaticText(panel, label="Min:")
         self.basesMinBtn = wx.SpinCtrl(panel, min=1, max=10, initial=4)
         self.basesMinBtn.Enable(False)
         self.basesMinBtn.SetToolTip("The lowest a stat can roll")
-        baseMax = wx.StaticText(panel, label="Max: ")
+        baseMax = wx.StaticText(panel, label="Max:")
         self.basesMaxBtn = wx.SpinCtrl(panel, min=10, max=30, initial=21)    # Max value to not completely break game difficulty
         self.basesMaxBtn.Enable(False)
         self.basesMaxBtn.SetToolTip("The highest a stat can roll")
@@ -130,14 +130,17 @@ class MainWindow(wx.Frame):
                        wx.DefaultSize, listGrowthsOptions, 1, wx.RA_SPECIFY_COLS)
         self.growthsOptions.Bind(wx.EVT_RADIOBOX,self.isGrowthsRandoOn)
 
+        self.growthsOptions.SetItemToolTip(0, "Do not change proficiency growth rates")
+        self.growthsOptions.SetItemToolTip(1, "Randomize proficiency growths.\nOnly affects rate of leveling a weapon type")
+
             # Spinboxes to control growths rando
         growthChance = wx.StaticText(panel, label="Chance:")
         self.growthsChanceBtn = wx.SpinCtrl(panel, min=1, max=100, initial=50)
         self.growthsChanceBtn.Enable(False)
-        self.growthsChanceBtn.SetToolTip("Percent chance of a proficiency having a growth above 0\n\
-If a growth does not roll successfully, it WILL be set to 0\n\
+        self.growthsChanceBtn.SetToolTip("The chance of a proficiency having a growth above 0\n\
+If the roll fails, growth = 0\n\
 A growth of 0 does NOT mean it will not grow, it only reduces the rate of growth")
-        growthMax = wx.StaticText(panel, label="Max: ")
+        growthMax = wx.StaticText(panel, label="Max:")
         self.growthsMaxBtn = wx.SpinCtrl(panel, min=1, max=7, initial=3)
         self.growthsMaxBtn.Enable(False)
         
@@ -151,27 +154,39 @@ A higher growth means a faster rate of leveling")
         listProfOptions = ['Do Not Randomize','Shuffle Proficiencies', 'Randomize Proficiencies']
         self.profOptions = wx.RadioBox(panel, wx.ID_ANY, "Weapon Proficiency", wx.DefaultPosition,
                        wx.DefaultSize, listProfOptions, 1, wx.RA_SPECIFY_COLS)
-        #self.profOptions.Bind(wx.EVT_RADIOBOX,self.isProfRandoOn)
-
-        profChanceLabel = wx.StaticText(panel, label="Chance: ")
+        self.profOptions.Bind(wx.EVT_RADIOBOX,self.isProfRandoOn)
+            # The Everything Else for proficiency rando
+        profChanceLabel = wx.StaticText(panel, label="Chance:")
         self.profChanceBtn = wx.SpinCtrl(panel, min=0, max=100, initial=30)
         self.profChanceBtn.Enable(False)
-        self.profChanceBtn.SetToolTip("The chance a proficiency base is above 0")
-        profMaxLabel = wx.StaticText(panel, label="Max: ")
+        self.profChanceBtn.SetToolTip("The chance a proficiency base is above 0\nIf the roll fails, base = 0")
+        profMaxLabel = wx.StaticText(panel, label="Max:")
         self.profMaxBtn = wx.SpinCtrl(panel, min=1, max=31, initial=5)
         self.profMaxBtn.Enable(False)
         self.profMaxBtn.SetToolTip("The highest a proficiency base can roll")
-        self.profGrow = wx.CheckBox(panel, -1, "Grow outside of party")
-        self.profGrow.SetToolTip("Add a chance for a proficiency to grow while the party member is\n\
-outside the party. \nBy default, this flag is not applied to randomized proficiency bases")
-        
-        # Spinbox for the checkbox
-        # Magic options?
-        
+        self.profMagIncl = wx.CheckBox(panel, -1, "Include Magic?")
+        self.profMagIncl.Enable(False)
+        self.profMagIncl.SetToolTip("Set if magic should be included\nBy default, excluded for purposes of TP Crowns")
+        profMagLabel = wx.StaticText(panel, label="Chance:")
+        self.profMagChance = wx.SpinCtrl(panel, min=1, max=100, initial=20)
+        self.profMagChance.Enable(False)
+        self.profMagChance.SetToolTip("Chance for magic proficiency to be rolled")
+
+        self.profGrow = wx.CheckBox(panel, -1, "Randomize growth outside\nof party?")
+        self.profGrow.SetToolTip("Randomize if a proficiency should grow while the party member is\n\
+outside the party. \nBy default, this flag is not applied to randomized proficiency bases.\nDOES NOT AFFECT HP, TP, MP, OR SUPPORT")
+        self.profGrow.Enable(False)
+        profGrowLabel = wx.StaticText(panel, label="Chance:")
+        self.profGrowBtn = wx.SpinCtrl(panel, min=1, max=100, initial=40)
+        self.profGrowBtn.SetToolTip("Chance for a proficiency to\nhave an out-of-party growth")
+        self.profGrowBtn.Enable(False)
+
+        self.profMagIncl.Bind(wx.EVT_CHECKBOX, self.isMagProfOn)
+        self.profGrow.Bind(wx.EVT_CHECKBOX, self.isProfGrowOn)
 
         self.profOptions.SetItemToolTip(0, "Do not change proficiency bases")
-        self.profOptions.SetItemToolTip(1, "Shuffle proficiency bases I.e. 5 Sword rank becomes 5 Kung Fu")
-        self.profOptions.SetItemToolTip(2, "Completely randomize weapon proficiency bases (DOES NOT REFER TO PERSONAL STATS)")
+        self.profOptions.SetItemToolTip(1, "Shuffle proficiency bases I.e. 5 Sword rank becomes 5 Kung Fu\nShuffles growth outside of party.")
+        self.profOptions.SetItemToolTip(2, "Completely randomize weapon proficiency bases.\n(DOES NOT REFER TO PERSONAL STATS)")
 
 
             #!TODO Growth Type, Spark Type, Special Weapon, Inherit Magic
@@ -243,21 +258,27 @@ outside the party. \nBy default, this flag is not applied to randomized proficie
         growthsOptSizer.Add(self.growthsMaxBtn, pos=(2,1), flag=wx.ALL, border=2)
 
             # Set up the proficiency sizer
-        profOptSizer.Add(self.profOptions, pos=(0,0), span=(1,2), flag=wx.LEFT, border=1)
+        profOptSizer.Add(self.profOptions, pos=(0,0), span=(1,4), flag=wx.LEFT, border=1)        
         profOptSizer.Add(profChanceLabel, pos=(1,0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
         profOptSizer.Add(self.profChanceBtn, pos=(1,1), flag=wx.LEFT | wx.RIGHT, border=1)
         profOptSizer.Add(profMaxLabel, pos=(2,0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
         profOptSizer.Add(self.profMaxBtn, pos=(2,1), flag=wx.LEFT | wx.RIGHT, border=1)
+        profOptSizer.Add(self.profMagIncl, pos=(1,2),span=(1,2), flag=wx.LEFT|wx.ALIGN_CENTER, border=15)
+        profOptSizer.Add(profMagLabel, pos=(2, 2), flag=wx.LEFT| wx.ALIGN_CENTER, border=15)
+        profOptSizer.Add(self.profMagChance, pos=(2, 3), flag=wx.LEFT|wx.RIGHT, border=1)
 
-        profOptSizer.Add(self.profGrow, pos=(3, 0), span=(1,2))
+        profOptSizer.Add(self.profGrow, pos=(3, 0), span=(1,4))
+        profOptSizer.Add(profGrowLabel, pos=(4, 0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
+        profOptSizer.Add(self.profGrowBtn, pos=(4, 1), flag=wx.ALL, border=1)
+
 
             # Set up the body sizer
         bodySizer.Add(basesOptSizer, pos=(0,0))
-        bodySizer.Add(growthsOptSizer, pos=(1, 0), flag=wx.TOP, border=5)
-        bodySizer.Add(self.tatyanaCheck, pos=(2, 0), flag=wx.LEFT, border=15)
-        bodySizer.Add(profOptSizer, pos=(0, 1), flag=wx.LEFT, border=40)
+        bodySizer.Add(growthsOptSizer, pos=(1, 0), flag=wx.TOP, border=25)
+        bodySizer.Add(self.tatyanaCheck, pos=(3, 0), flag=wx.LEFT, border=1)
+        bodySizer.Add(profOptSizer, pos=(0, 1), span=(2,1), flag=wx.LEFT, border=40)
 
-        bodySizer.Add(theMagicButton, pos=(3,5))
+        bodySizer.Add(theMagicButton, pos=(3,3))
 
 
             # Set up the top level sizer
@@ -363,7 +384,40 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         else:
             self.growthsChanceBtn.Enable(False)
             self.growthsMaxBtn.Enable(False)
-            
+
+    def isProfRandoOn(self, e):
+        print(e.GetSelection())
+        if(e.GetSelection() == 2):
+            self.profChanceBtn.Enable(True)
+            self.profMaxBtn.Enable(True)
+            self.profGrow.Enable(True)
+            self.profMagIncl.Enable(True)
+            if self.profGrow.GetValue():
+                self.profGrowBtn.Enable(True)
+            if self.profMagIncl.GetValue():
+                self.profMagChance.Enable(True)
+        else:
+            self.profChanceBtn.Enable(False)
+            self.profMaxBtn.Enable(False)
+            self.profGrow.Enable(False)
+            self.profGrowBtn.Enable(False)
+            self.profMagIncl.Enable(False)
+            self.profMagChance.Enable(False)
+
+    def isMagProfOn(self, e):
+        check = e.GetEventObject()
+        if check.GetValue():
+            self.profMagChance.Enable(True)
+        else:
+            self.profMagChance.Enable(False)
+
+    def isProfGrowOn(self, e):
+        sender = e.GetEventObject()
+        print(sender.GetValue())
+        if sender.GetValue():
+            self.profGrowBtn.Enable(True)
+        else:
+            self.profGrowBtn.Enable(False)
 
 
     def getOptions(self):
@@ -387,6 +441,14 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         opt.append(self.growthsOptions.GetSelection())
         opt.append(self.growthsChanceBtn.GetValue())
         opt.append(self.growthsMaxBtn.GetValue())
+
+        opt.append(self.profOptions.GetSelection())
+        opt.append(self.profChanceBtn.GetValue())
+        opt.append(self.profMaxBtn.GetValue())
+        opt.append(self.profGrow.GetValue())
+        opt.append(self.profGrowBtn.GetValue())
+        opt.append(self.profMagIncl.GetValue())
+        opt.append(self.profMagChance.GetValue())
 
         return opt
 
@@ -431,7 +493,7 @@ persists, please inform Draco9325.\n'+str(e), 'Logic Error', style=wx.OK | wx.IC
 
         print("Randomization math finished, writing to file...")
         
-            # Finally, write the ROM to the specified filepath
+            #* Finally, write the ROM to the specified filepath
         try:
             randoObj.writeToSFC(self.save_path)
 
@@ -440,7 +502,7 @@ ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=
             if dialogue.ShowModal() != wx.ID_YES:            # IT'S SO UGLY!!! WHY DO I HAVE TO REMOVE THE SPACES!!
                 return
             
-            writelist = [chosenOptions[0], chosenOptions[1], chosenOptions[2], chosenOptions[7]]
+            writelist = [chosenOptions[0], chosenOptions[1], chosenOptions[2], chosenOptions[7], chosenOptions[10]]
             randoObj.writeChangelog(writelist, self.save_path)
             
             dialogue = wx.MessageDialog(self, 'Changelog saved next to ROM.', 'File Saved', style=wx.OK | wx.ICON_INFORMATION)

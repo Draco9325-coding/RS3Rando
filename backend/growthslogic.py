@@ -42,7 +42,7 @@ class GrowthsRando():
                     roll = random.randrange(0, 100)
 
                     if roll > growthChance:
-                        self.fileEditObj[fileIndex + j] = 0
+                        self.fileEditObj[fileIndex + j] = 0     # If roll fails, set to 0
                     else:
                         if growthMax == 1:
                             newGrowth = 1
@@ -74,6 +74,6 @@ class GrowthsRando():
 
 
 
-    def main(self, optlist: list, seed, romVer):
-        random.seed(seed)
+    def main(self, optlist: list, romVer):
+        #random.seed(seed)
         return self.handleGrowthsRando(optlist, romVer)
