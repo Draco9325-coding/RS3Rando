@@ -160,12 +160,14 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
                 pBuf.append(pbufRead)
             
             
-            bStr =  f"\t   {bBuf[0]:<5d}{bBuf[1]:<5d}{bBuf[2]:<5d}{bBuf[3]:<5d}{bBuf[4]:<5d}{bBuf[5]:<5d}{bBuf[6]:<5d}\n\n"
-            gStr =  f"\t\t {gBuf[0]:<4d}{gBuf[1]:<4d}{gBuf[2]:<4d}{gBuf[3]:<4d}\
+            bStr =  f"       {bBuf[0]:<5d}{bBuf[1]:<5d}{bBuf[2]:<5d}{bBuf[3]:<5d}{bBuf[4]:<5d}{bBuf[5]:<5d}{bBuf[6]:<5d}\n\n"
+            gStr =  f"         {gBuf[0]:<4d}{gBuf[1]:<4d}{gBuf[2]:<4d}{gBuf[3]:<4d}\
 {gBuf[4]:<4d}{gBuf[5]:<4d}{gBuf[6]:<4d}{gBuf[7]:<4d}{gBuf[8]:<4d}{gBuf[9]:<4d}{gBuf[10]:<4d}\
 {gBuf[11]:<5d}{gBuf[12]:<4d}{gBuf[13]:<4d}{gBuf[14]:<4d}\n\n"
-            pStr =  f"\t\t\t   {pBuf[0]:<5d}{pBuf[1]:<5d}{pBuf[2]:<5d}{pBuf[3]:<5d}{pBuf[4]:<5d}{pBuf[5]:<5d}{pBuf[6]:<5d}{pBuf[7]:<5d}\n"
+            pStr =  f"               {pBuf[0]:<5d}{pBuf[1]:<5d}{pBuf[2]:<5d}{pBuf[3]:<5d}{pBuf[4]:<5d}{pBuf[5]:<5d}{pBuf[6]:<5d}{pBuf[7]:<5d}\n"
             pgStr = f"   OoP Growth: {pgBuf[0]:<5s}{pgBuf[1]:<5s}{pgBuf[2]:<5s}{pgBuf[3]:<5s}{pgBuf[4]:<5s}{pgBuf[5]:<5s}{pgBuf[6]:<5s}{pgBuf[7]:<5s}\n\n"
+
+
             f.write("Bases: STR  DEX  AGI  CON  INT  WIL  CHA\n")
             f.write(bStr)
 
@@ -214,7 +216,9 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
         proficiencies = ProfRando(self.fileEditObj)
 
         # romVer = 0 for JP, romVer = 1 for EN, romVer = 2 for ES
-
+        print("Base Randomization...")
         self.fileEditObj = bases.main(basesRando, self.romVer)
+        print("Growth Randomization...")
         self.fileEditObj = growths.main(growthsRando, self.romVer)
+        print("Weapon Level Randomization...")
         self.fileEditObj = proficiencies.main(profsRando, self.romVer)

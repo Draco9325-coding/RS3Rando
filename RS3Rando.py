@@ -20,7 +20,7 @@ class MainWindow(wx.Frame):
         self.fileObj = ''
         random.seed(datetime.now().timestamp())
 
-        wx.Frame.__init__(self, parent, title=title, size=(825,600), style=style)   # Override the default __init__
+        wx.Frame.__init__(self, parent, title=title, size=(750,600), style=style)   # Override the default __init__
 
         panel = wx.Panel(self, wx.ID_ANY)  # Panel to allow the window look good regardless of platform
         panel.SetBackgroundColour(wx.Colour(142, 121, 195))
@@ -130,28 +130,28 @@ class MainWindow(wx.Frame):
                        wx.DefaultSize, listGrowthsOptions, 1, wx.RA_SPECIFY_COLS)
         self.growthsOptions.Bind(wx.EVT_RADIOBOX,self.isGrowthsRandoOn)
 
-        self.growthsOptions.SetItemToolTip(0, "Do not change proficiency growth rates")
-        self.growthsOptions.SetItemToolTip(1, "Randomize proficiency growths.\nOnly affects rate of leveling a weapon type")
+        self.growthsOptions.SetItemToolTip(0, "Do not change weapon leveling rate")
+        self.growthsOptions.SetItemToolTip(1, "Randomize weapon level growths.\nOnly affects rate of leveling a weapon type")
 
             # Spinboxes to control growths rando
         growthChance = wx.StaticText(panel, label="Chance:")
         self.growthsChanceBtn = wx.SpinCtrl(panel, min=1, max=100, initial=50)
         self.growthsChanceBtn.Enable(False)
-        self.growthsChanceBtn.SetToolTip("The chance of a proficiency having a growth above 0\n\
+        self.growthsChanceBtn.SetToolTip("The chance of a weapon type having a growth above 0\n\
 If the roll fails, growth = 0\n\
 A growth of 0 does NOT mean it will not grow, it only reduces the rate of growth")
         growthMax = wx.StaticText(panel, label="Max:")
         self.growthsMaxBtn = wx.SpinCtrl(panel, min=1, max=7, initial=3)
         self.growthsMaxBtn.Enable(False)
         
-        self.growthsMaxBtn.SetToolTip("Maximum growth allowed in a proficiency\n\
+        self.growthsMaxBtn.SetToolTip("Maximum growth allowed in a weapon type\n\
 A higher growth means a faster rate of leveling")
 
             #!TODO Options for Base HP/LP randomization
 
             # Options for Proficiency bases randomization
                 #Internal checkbox for magic; Need to make magicks exclusive from each other
-        listProfOptions = ['Do Not Randomize','Shuffle Proficiencies', 'Randomize Proficiencies']
+        listProfOptions = ['Do Not Randomize','Shuffle Weapon Levels', 'Randomize Weapon Levels']
         self.profOptions = wx.RadioBox(panel, wx.ID_ANY, "Weapon Proficiency", wx.DefaultPosition,
                        wx.DefaultSize, listProfOptions, 1, wx.RA_SPECIFY_COLS)
         self.profOptions.Bind(wx.EVT_RADIOBOX,self.isProfRandoOn)
@@ -159,34 +159,36 @@ A higher growth means a faster rate of leveling")
         profChanceLabel = wx.StaticText(panel, label="Chance:")
         self.profChanceBtn = wx.SpinCtrl(panel, min=0, max=100, initial=30)
         self.profChanceBtn.Enable(False)
-        self.profChanceBtn.SetToolTip("The chance a proficiency base is above 0\nIf the roll fails, base = 0")
+        self.profChanceBtn.SetToolTip("The chance a base level is above 0\nIf the roll fails, base = 0")
         profMaxLabel = wx.StaticText(panel, label="Max:")
         self.profMaxBtn = wx.SpinCtrl(panel, min=1, max=31, initial=5)
         self.profMaxBtn.Enable(False)
-        self.profMaxBtn.SetToolTip("The highest a proficiency base can roll\nHigher bases = Higher base TP/MP")
+        self.profMaxBtn.SetToolTip("The highest a weapon level can roll\nHigher bases = Higher base TP/MP")
         self.profMagIncl = wx.CheckBox(panel, -1, "Include Magic?")
         self.profMagIncl.Enable(False)
-        self.profMagIncl.SetToolTip("Set if magic should be included\nBy default, excluded for purposes of TP Crowns")
+        self.profMagIncl.SetToolTip("Include magic levels to be randomized\nBy default, excluded for purposes of TP Crowns\n\
+By default, spell lists will be modified  to be 'parallel'")
         profMagLabel = wx.StaticText(panel, label="Chance:")
         self.profMagChance = wx.SpinCtrl(panel, min=1, max=100, initial=20)
         self.profMagChance.Enable(False)
-        self.profMagChance.SetToolTip("Chance for magic proficiency to be rolled")
+        self.profMagChance.SetToolTip("Chance for magic level to be rolled")
 
-        self.profGrow = wx.CheckBox(panel, -1, "Randomize growth outside\nof party?")
-        self.profGrow.SetToolTip("Randomize if a proficiency should grow while the party member is\n\
-outside the party. \nBy default, this flag is not applied to randomized proficiency bases.\nDOES NOT AFFECT HP, TP, MP, OR SUPPORT")
+        self.profGrow = wx.CheckBox(panel, -1, "Randomize out of\nparty scaling?")
+        self.profGrow.SetToolTip("Randomize if a weapon level should scale while the party member is\n\
+outside the party. \nBy default, this flag is not applied to randomized weapon level bases.\nDOES NOT affect scaling of TP/MP/HP/Support levels")
         self.profGrow.Enable(False)
         profGrowLabel = wx.StaticText(panel, label="Chance:")
         self.profGrowBtn = wx.SpinCtrl(panel, min=1, max=100, initial=40)
-        self.profGrowBtn.SetToolTip("Chance for a proficiency to\nhave an out-of-party growth")
+        self.profGrowBtn.SetToolTip("Chance for a weapon level to\nhave an out-of-party growth")
         self.profGrowBtn.Enable(False)
 
         self.profMagIncl.Bind(wx.EVT_CHECKBOX, self.isMagProfOn)
         self.profGrow.Bind(wx.EVT_CHECKBOX, self.isProfGrowOn)
 
-        self.profOptions.SetItemToolTip(0, "Do not change proficiency bases")
-        self.profOptions.SetItemToolTip(1, "Shuffle proficiency bases I.e. 5 Sword rank becomes 5 Kung Fu\nShuffles growth outside of party.")
-        self.profOptions.SetItemToolTip(2, "Completely randomize weapon proficiency bases.\n(DOES NOT REFER TO PERSONAL STATS)")
+        self.profOptions.SetItemToolTip(0, "Do not change weapon levels")
+        self.profOptions.SetItemToolTip(1, "Shuffle weapon levels I.e. 5 Sword rank becomes 5 Kung Fu\n\
+Shuffles out of party scaling.\n")
+        self.profOptions.SetItemToolTip(2, "Completely randomize base weapon level.\n(DOES NOT REFER TO PERSONAL STATS)")
 
 
             #!TODO Growth Type, Spark Type, Special Weapon, Inherit Magic
@@ -364,7 +366,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
     def getSeed(self, e): self.textSeedObj.SetValue(random.randrange(1000, 2000000000))
 
     def isBasesRandoOn(self, e):
-        print(e.GetSelection())
+        
         if(e.GetSelection() == 2):  # One could say calling a specific method on undetermined object e is dangerous, I say "Skate or Die"
             self.basesMinBtn.Enable(True)
             self.basesMaxBtn.Enable(True)
@@ -377,7 +379,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
             self.basesVarBtn.Enable(False)
 
     def isGrowthsRandoOn(self, e):
-        print(e.GetSelection())
+        
         if(e.GetSelection() == 1):
             self.growthsChanceBtn.Enable(True)
             self.growthsMaxBtn.Enable(True)
@@ -386,7 +388,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
             self.growthsMaxBtn.Enable(False)
 
     def isProfRandoOn(self, e):
-        print(e.GetSelection())
+        
         if(e.GetSelection() == 2):
             self.profChanceBtn.Enable(True)
             self.profMaxBtn.Enable(True)
@@ -413,7 +415,7 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
 
     def isProfGrowOn(self, e):
         sender = e.GetEventObject()
-        print(sender.GetValue())
+        
         if sender.GetValue():
             self.profGrowBtn.Enable(True)
         else:
