@@ -20,7 +20,7 @@ class MainWindow(wx.Frame):
         self.fileObj = ''
         random.seed(datetime.now().timestamp())
 
-        wx.Frame.__init__(self, parent, title=title, size=(750,600), style=style)   # Override the default __init__
+        wx.Frame.__init__(self, parent, title=title, size=(725,580), style=style)   # Override the default __init__
 
         panel = wx.Panel(self, wx.ID_ANY)  # Panel to allow the window look good regardless of platform
         panel.SetBackgroundColour(wx.Colour(142, 121, 195))
@@ -90,7 +90,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.getSeed, seedBtn)
 
             # Line to separate the two text boxes from the settings
-        headerLine= wx.StaticLine(panel, style=wx.LI_HORIZONTAL, size=(700, 1))
+        headerLine= wx.StaticLine(panel, style=wx.LI_HORIZONTAL, size=(100, 1))
 
 
                 #  **************   Randomization Options   **************  #
@@ -192,6 +192,25 @@ Shuffles out of party scaling.\n")
 
 
             #!TODO Growth Type, Spark Type, Special Weapon, Inherit Magic
+        self.miscBox = wx.StaticBox(self, -1, "Other Personal Options", size=(185,175))
+        self.miscBox.SetBackgroundColour(wx.Colour(142, 121, 195))
+        self.sparkTypeCheck = wx.CheckBox(panel, -1, "Randomize Spark Type")
+        self.sparkTypeCheck.SetToolTip("Randomize which set of techs the character is\nproficient in learning")
+        self.starSignCheck = wx.CheckBox(panel, -1, "Randomize Star Sign")
+        self.starSignCheck.SetToolTip("Randomize which star sign stat modifier gets applied (Hunter, Royal, etc.)")
+        self.favWeaponCheck = wx.CheckBox(panel, -1, "Randomize Favorite\nWeapon")
+        self.favWeaponCheck.SetToolTip("Randomize which weapon type modifer gets applied to a character's stats")
+        self.changeModifers = wx.CheckBox(panel, -1, "Randomize stat modifers")
+        self.changeModifers.SetToolTip("Every character has a Star Sign and Favorite Weapon modifier applied to their initial stats.\n\
+This option allows for the randomization of the bonuses/penalties these modifiers give")
+        modMinLbl = wx.StaticText(panel, label="Min:")
+        self.modMinBox = wx.SpinCtrl(panel, min=-10, max=0, initial=-3)
+        self.modMinBox.Enable(False)
+        modMaxLbl = wx.StaticText(panel, label="Max:")
+        self.modMaxBox = wx.SpinCtrl(panel, min=0, max=10, initial=3)
+        self.modMaxBox.Enable(False)
+
+        self.changeModifers.Bind(wx.EVT_CHECKBOX, self.isChangeModOn)
 
             # Quantum Decoupling of Tatyana
         self.tatyanaCheck = wx.CheckBox(panel,-1, "Split Tatyana")
@@ -220,10 +239,15 @@ Shuffles out of party scaling.\n")
         pathSizer = wx.BoxSizer(wx.HORIZONTAL)      # First sub-sizer holds filepath
         seedSizer = wx.BoxSizer(wx.HORIZONTAL)      # One below holds seed
 
-        bodySizer = wx.GridBagSizer(vgap=10, hgap=10)   # Main body; Will contain other sub-sizers
+        bodySizer = wx.GridBagSizer(vgap=15, hgap=10)   # Main body; Will contain other sub-sizers
         basesOptSizer = wx.GridBagSizer(vgap=7, hgap=2)
         growthsOptSizer = wx.GridBagSizer(vgap=5, hgap=5)
         profOptSizer = wx.GridBagSizer(vgap=7, hgap=2)
+
+        col1Sizer = wx.GridBagSizer(vgap=25, hgap=1)
+        miscBoxSizer = wx.StaticBoxSizer(self.miscBox, wx.VERTICAL)
+        modCtrl = wx.BoxSizer(wx.HORIZONTAL)
+        inBoxSizer = wx.GridBagSizer(vgap=10, hgap=10)   # Holds the widgets within the static box
 
             # Set up the filepath sizer
         pathSizer.Add((95,1), proportion=0)
@@ -273,14 +297,32 @@ Shuffles out of party scaling.\n")
         profOptSizer.Add(profGrowLabel, pos=(4, 0), flag=wx.ALL | wx.ALIGN_CENTER, border=1)
         profOptSizer.Add(self.profGrowBtn, pos=(4, 1), flag=wx.ALL, border=1)
 
+            # Set up the misc box sizer(s)
+        inBoxSizer.Add(self.sparkTypeCheck, pos=(0,0))
+        inBoxSizer.Add(self.starSignCheck, pos=(1,0))
+        inBoxSizer.Add(self.favWeaponCheck, pos=(2,0))
+        inBoxSizer.Add(self.changeModifers, pos=(3,0))
 
+        modCtrl.Add(modMinLbl, proportion=0, flag= wx.ALIGN_CENTER)
+        modCtrl.Add(self.modMinBox, proportion=0, flag= wx.ALIGN_CENTER)
+        modCtrl.Add((25,0), proportion=0)
+        modCtrl.Add(modMaxLbl, proportion=0, flag= wx.ALIGN_CENTER)
+        modCtrl.Add(self.modMaxBox, proportion=0, flag= wx.ALIGN_CENTER)
+
+        inBoxSizer.Add(modCtrl, pos=(4,0))
+
+        miscBoxSizer.Add(inBoxSizer, proportion=0, flag=wx.ALL , border=1)
+
+            # Column 1
+        col1Sizer.Add(basesOptSizer, pos=(0,0))
+        col1Sizer.Add(growthsOptSizer, pos=(1,0))
             # Set up the body sizer
-        bodySizer.Add(basesOptSizer, pos=(0,0))
-        bodySizer.Add(growthsOptSizer, pos=(1, 0), flag=wx.TOP, border=25)
-        bodySizer.Add(self.tatyanaCheck, pos=(3, 0), flag=wx.LEFT, border=1)
-        bodySizer.Add(profOptSizer, pos=(0, 1), span=(2,1), flag=wx.LEFT, border=40)
+        bodySizer.Add(col1Sizer, pos=(0,0), span=(2, 1))
+        bodySizer.Add(self.tatyanaCheck, pos=(2, 0), flag=wx.LEFT, border=1)
+        bodySizer.Add(profOptSizer, pos=(0, 1), flag=wx.LEFT, border=40)
+        bodySizer.Add(miscBoxSizer, pos=(0,2), flag=wx.LEFT | wx.CENTER, border=40)
 
-        bodySizer.Add(theMagicButton, pos=(3,3))
+        bodySizer.Add(theMagicButton, pos=(2,2))
 
 
             # Set up the top level sizer
@@ -420,6 +462,16 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
             self.profGrowBtn.Enable(True)
         else:
             self.profGrowBtn.Enable(False)
+
+    def isChangeModOn(self, e):
+        sender = e.GetEventObject()
+        
+        if sender.GetValue():
+            self.modMinBox.Enable(True)
+            self.modMaxBox.Enable(True)
+        else:
+            self.modMinBox.Enable(False)
+            self.modMaxBox.Enable(False)
 
 
     def getOptions(self):
