@@ -2,6 +2,7 @@ import random
 from backend.baseslogic import BaseRando
 from backend.growthslogic import GrowthsRando
 from backend.proficiencylogic import ProfRando
+from backend.modifierlogic import ModRando
 
 class Randomization():
     
@@ -197,28 +198,35 @@ WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
         basesRando = []
         growthsRando = []
         profsRando = []
+        modsRando = []
         
         for i in randoOpt[1:7]:
             basesRando.append(i)
 
-        growthsRando.append(randoOpt[1])
+        growthsRando.append(randoOpt[1])    # Append whether or not to split Tatyana
         for j in randoOpt[7:10]:
             growthsRando.append(j)
         
-        profsRando.append(randoOpt[1])
+        profsRando.append(randoOpt[1])      # See above
         for k in randoOpt[10:17]:
             profsRando.append(k)
 
+        modsRando.append(randoOpt[1])      # Numero tres
+        for l in randoOpt[17:23]:
+            modsRando.append(l)
         
             # Call methods that handle the individual options
         bases = BaseRando(self.fileEditObj)
         growths = GrowthsRando(self.fileEditObj)
         proficiencies = ProfRando(self.fileEditObj)
+        modifiers = ModRando(self.fileEditObj)
 
         # romVer = 0 for JP, romVer = 1 for EN, romVer = 2 for ES
-        print("Base Randomization...")
+        print("\t\t~~~~ \t  Base Randomization...    ~~~~")
         self.fileEditObj = bases.main(basesRando, self.romVer)
-        print("Growth Randomization...")
+        print("\t\t~~~~ \tGrowth Randomization...    ~~~~")
         self.fileEditObj = growths.main(growthsRando, self.romVer)
-        print("Weapon Level Randomization...")
+        print("\t\t~~~~ Weapon Level Randomization... ~~~~")
         self.fileEditObj = proficiencies.main(profsRando, self.romVer)
+        print("\t\t~~~~ Stat Modifier Randomization...~~~~")
+        self.fileEditObj = modifiers.main(modsRando, self.romVer)

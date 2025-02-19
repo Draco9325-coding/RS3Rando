@@ -51,9 +51,11 @@ class BaseRando():
 
             # Get the random personal bases
         if basesOpt[1] == 0:
+            print("No changes necessary, skipping...")
             return self.fileEditObj
 
         if basesOpt[1] == 1:
+            print("Shuffling bases...")
             return self.basesShuffle(fileIndex, basesOpt[0])      # Call to other method to shuffle bases instead
         
         k = 0               # Why did I choose k when I made this?
@@ -98,12 +100,12 @@ class BaseRando():
                             self.fileEditObj[tatyanaIndex + j] = newStat      #* I also don't know why this works but I will take it
                             tatyanaIndex += 48
                         
-                
+                print("Char",k,"randomized\nChecking stat total...")
+
                 if totalcheck < statMin or totalcheck > statMax:    # If the BST does not fall within the range, reroll
                     k -= 1
                     fileIndex -= 48
-
-                print("Char",k,"randomized")
+                    print("Check failed, rerolling...")
 
                 k += 1      # Do not loop infinitely
                 fileIndex += 48     # Move to the next character

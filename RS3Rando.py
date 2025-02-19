@@ -504,6 +504,13 @@ Coded using Python 3 with wxPython GUI libraries", "About RS3Rando")    # I don'
         opt.append(self.profMagIncl.GetValue())
         opt.append(self.profMagChance.GetValue())
 
+        opt.append(self.sparkTypeCheck.GetValue())
+        opt.append(self.starSignCheck.GetValue())
+        opt.append(self.favWeaponCheck.GetValue())
+        opt.append(self.changeModifers.GetValue())
+        opt.append(self.modMinBox.GetValue())
+        opt.append(self.modMaxBox.GetValue())
+
         return opt
 
 

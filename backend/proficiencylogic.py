@@ -171,17 +171,23 @@ class ProfRando():
         # Options in order of
         # Tatyana/Choice/Max/Grow?/Chance/Mag/Chance
             # Set where the proficiency bases are, and check if we need to adjust
+        
         fileIndex = 4064781
         
         if romVer == 1:
             fileIndex += 512
 
         if profOpt[1] == 0:
+            print("No changes necessary, skipping...")
             return self.fileEditObj
         elif profOpt[1] == 1:
+            print("Shuffling weapon levels...")
             self.profShuffle(fileIndex, profOpt[0], romVer)
             return self.fileEditObj
         
+        for item in profOpt:
+            print(item)
+
             # Holds if the proficiency grows out of party
         doesGrow = False
 
@@ -269,7 +275,7 @@ class ProfRando():
                         roll = random.randrange(0, 33, 32)  # 0x00 = Sun   0x20 = Moon
 
                     newProf += roll
-                    print(newProf)
+                    
                     self.fileEditObj[fileIndex + i] = newProf   # Finally, assign the value
 
                         # Tatyana time (the trilogy pt 2)
@@ -285,6 +291,7 @@ class ProfRando():
             exIndex = fileIndex + 32
             self.fileEditObj[exIndex] = 0
 
+            print("Character",count,"weapon levels randomized")
             count += 1      # Don't loop infinitely
             fileIndex += 48     # Advance to the next character
 

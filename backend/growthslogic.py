@@ -14,6 +14,7 @@ class GrowthsRando():
             fileIndex += 512        # Push forward if in the header'd EN ROM
 
         if growthsOpt[1] == 0:
+            print("No changes necessary, skipping...")
             return self.fileEditObj
         
         splitTatyana = growthsOpt[0]
