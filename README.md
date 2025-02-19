@@ -1,4 +1,4 @@
-# RS3Rando v0.2.0
+# RS3Rando v0.2.1
 
 RS3Rando is a (Currently very WIP) randomizer for the Super Famicom title "Romancing SaGa 3."
 
