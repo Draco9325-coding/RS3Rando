@@ -42,6 +42,7 @@ class ModRando():
 
                 self.fileEditObj[favmodindex+i] = newmod
 
+            favmodindex += 8
         print()
 
     def handleModRando(self, modOpt, ver):
@@ -72,12 +73,32 @@ class ModRando():
             if modOpt[1]:   # Randomize spark type
                 newval = random.randrange(0,11)
                 self.fileEditObj[sparkfileindex] = newval
+                
+                if count == 18 and modOpt[0] == False:
+                    tatyanaindex = sparkfileindex +720
+                    for x in range(8):
+                        self.fileEditObj[tatyanaindex] = newval
+                        tatyanaindex += 48
+
             if modOpt[2]:   # Randomize star sign
                 newval = random.randrange(0,4)
                 self.fileEditObj[sparkfileindex+18] = newval
+
+                if count == 18 and modOpt[0] == False:
+                    tatyanaindex = sparkfileindex +720
+                    for x in range(8):
+                        self.fileEditObj[tatyanaindex + 18] = newval
+                        tatyanaindex += 48
+
             if modOpt[3]:   # Randomize fav weapon
                 newval = random.randrange(0,8)
                 self.fileEditObj[sparkfileindex+20] = newval
+
+                if count == 18 and modOpt[0] == False:
+                    tatyanaindex = sparkfileindex +720
+                    for x in range(8):
+                        self.fileEditObj[tatyanaindex+20] = newval
+                        tatyanaindex += 48
 
             print("Character",count,"modifiers randomized")
 

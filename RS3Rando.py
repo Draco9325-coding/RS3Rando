@@ -204,10 +204,12 @@ Shuffles out of party scaling.\n")
         self.changeModifers.SetToolTip("Every character has a Star Sign and Favorite Weapon modifier applied to their initial stats.\n\
 This option allows for the randomization of the bonuses/penalties these modifiers give")
         modMinLbl = wx.StaticText(panel, label="Min:")
-        self.modMinBox = wx.SpinCtrl(panel, min=-10, max=0, initial=-3)
+        self.modMinBox = wx.SpinCtrl(panel, min=-15, max=0, initial=-3)
+        self.modMinBox.SetToolTip("WARNING: LARGE VALUES HAVE\nA HIGH CHANCE OF BREAKING THE GAME")
         self.modMinBox.Enable(False)
         modMaxLbl = wx.StaticText(panel, label="Max:")
-        self.modMaxBox = wx.SpinCtrl(panel, min=0, max=10, initial=3)
+        self.modMaxBox = wx.SpinCtrl(panel, min=1, max=15, initial=3)
+        self.modMaxBox.SetToolTip("WARNING: LARGE VALUES HAVE\nA HIGH CHANCE OF BREAKING THE GAME")
         self.modMaxBox.Enable(False)
 
         self.changeModifers.Bind(wx.EVT_CHECKBOX, self.isChangeModOn)
@@ -563,7 +565,8 @@ ROM Written to '+self.save_path+'\n\nSave Changelog?', 'Save Successful', style=
             if dialogue.ShowModal() != wx.ID_YES:            # IT'S SO UGLY!!! WHY DO I HAVE TO REMOVE THE SPACES!!
                 return
             
-            writelist = [chosenOptions[0], chosenOptions[1], chosenOptions[2], chosenOptions[7], chosenOptions[10]]
+            writelist = [chosenOptions[0], chosenOptions[1], chosenOptions[2], chosenOptions[7], chosenOptions[10], chosenOptions[17],
+                         chosenOptions[18], chosenOptions[19], chosenOptions[20]]
             randoObj.writeChangelog(writelist, self.save_path)
             
             dialogue = wx.MessageDialog(self, 'Changelog saved next to ROM.', 'File Saved', style=wx.OK | wx.ICON_INFORMATION)

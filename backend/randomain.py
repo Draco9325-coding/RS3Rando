@@ -21,7 +21,8 @@ class Randomization():
                             'Tiberius', 'Wood', 'Paul', 'Robin', 'Fat Robin', 'Muse', 'Sharl', 'Poet', 'Tatyana', 'Yan Fan', 'Undine',
                             'Zhi Lin', 'Herman', 'Fullbright', 'Bai Meiniang', 'Nora', 'Black', 'Catherine', 'Fairy', 'Boston', 'Zho',
                             'Flurry', 'Therese', 'Shebert', 'Millefeuille', 'Candy', 'Crepe', 'Souffle', 'Bavarios', 'Eclair', 'Tart']
-
+            self.starArr = ['Hunter/Artemis', 'Scholar/Athena', 'Royal/Zeus', 'Fighter/Ares', 'Merchant/Hermes']
+            self.wepArr = ['Sword', 'Big Sword', 'Axe', 'Mace', 'Epee', 'Spear', 'Bow', 'Kung Fu', 'None']
 
             for i in fileBytesObj:
                 self.fileEditObj.append(i)
@@ -61,6 +62,16 @@ class Randomization():
         pmBuf = []
         proficiencyIndex = 4064781
 
+        stmBuf = []
+        wmBuf = []
+        starmodIndex = 4101705
+        wepmodIndex = 4101753
+
+        spBuf = []
+        starBuf = []
+        wepBuf = []
+        sparkIndex = 4064790
+
         if writeList[1] == True:
             charCount = 41
         
@@ -68,6 +79,9 @@ class Randomization():
             basesIndex += 512
             growthsIndex += 512
             proficiencyIndex += 512
+            sparkIndex += 512
+            starmodIndex += 512
+            wepmodIndex += 512
         
         
         headStr1 = "Seed: " + str(writeList[0]) + "\n"
@@ -81,24 +95,95 @@ class Randomization():
         if writeList[3] == 0:
             headStr3 = "No Growth Randomization\n"
         else:
-            headStr3 = "Proficiency Growths: Randomized\n"
+            headStr3 = "Weapon Level Growths: Randomized\n"
 
         if writeList[4] == 0:
-            headStr4 = "No Proficiency Randomization\n\n\n"
+            headStr4 = "No Weapon Level Randomization\n\n"
         elif writeList[4] == 1:
-            headStr4 = "Proficiency Bases: Shuffled\n\n\n"
+            headStr4 = "Weapon Level Bases: Shuffled\n\n"
         else:
-            headStr4 = "Proficiency Bases: Randomized\n\n\n"
+            headStr4 = "Weapon Level Bases: Randomized\n\n"
+
+        if writeList[5] == True:
+            headStr5 = "Spark Types: Randomized\n"
+        else:
+            headStr5 = "Spark Types: Unchanged\n"
+
+        if writeList[6] == True:
+            headStr6 = "Star Signs: Randomized\n"
+        else:
+            headStr6 = "Star Signs: Unchanged\n"
+
+        if writeList[7] == True:
+            headStr7 = "Favorite Weapons: Randomized\n"
+        else:
+            headStr7 = "Favorite Weapons: Unchanged\n"
+
+        if writeList[8] == True:
+            headStr8 = "Stat Modifiers: Randomized\n\n\n"
+        else:
+            headStr8 = "Stat Modifiers: Unchanged\n\n\n"
+
 
         f.write("RS3 Randomized Changelog\n\n")
         f.write(headStr1)
         f.write(headStr2)
         f.write(headStr3)
         f.write(headStr4)
+        f.write(headStr5)
+        f.write(headStr6)
+        f.write(headStr7)
+        f.write(headStr8)
 
         f.write("SL = Slash (Swords)\tHI = Hit (Axe/Mace)\tPI = Pierce (Epee/Lance)\tSH = Shot (Bow)\tKG = Kung Fu\tSup = Support\n\
-WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n")
-        f.write("Stats listed here are BEFORE Star Sign/Weapon Specialty stat modifiers.\n\
+WI = Wind\tFI = Fire\tEA = Earth\tWA = Water\tSU = Sun\tMO = Moon\n\n\n")
+        
+        if writeList[8]:
+            f.write("\tNew Star Sign Modifers:\n")
+            for y in range (5):
+                stmBuf.clear()  # Clear the buffer of star sign modifiers
+
+                f.write(str(self.starArr[y])+':\n')
+                f.write("   Str   Dex   Agi   Con   Int   Wil   Cha   HP\n")
+                for z in range(8):
+
+                    buf = self.fileEditObj[starmodIndex + z]
+                    # print(buf)
+                    if buf >= 128:
+                        buf -= 128
+                        buf *= -1
+
+                    stmBuf.append(buf)
+
+                starmodIndex += 8
+
+                stmStr = f"{stmBuf[0]:>6d}{stmBuf[1]:>6d}{stmBuf[2]:>6d}{stmBuf[3]:>6d}\
+{stmBuf[4]:>6d}{stmBuf[5]:>6d}{stmBuf[6]:>6d}{stmBuf[7]:>6d}\n\n"
+                f.write(stmStr)
+
+            f.write("\n\tNew Favorite Weapon Modifiers:\n")
+
+            for y in range (9):
+                wmBuf.clear()
+
+                f.write(str(self.wepArr[y])+':\n')
+                f.write("   Str   Dex   Agi   Con   Int   Wil   Cha   HP\n")
+                for z in range(8):
+
+                    buf = self.fileEditObj[wepmodIndex + z]
+                    # print(buf)
+                    if buf >= 128:
+                        buf -= 128
+                        buf *= -1
+                    wmBuf.append(buf)
+                wepmodIndex += 8
+                
+
+                wmStr = f"{wmBuf[0]:>6d}{wmBuf[1]:>6d}{wmBuf[2]:>6d}{wmBuf[3]:>6d}\
+{wmBuf[4]:>6d}{wmBuf[5]:>6d}{wmBuf[6]:>6d}{wmBuf[7]:>6d}\n\n"
+                f.write(wmStr)
+
+        f.write("\nStats listed here are BEFORE Star Sign/Weapon Specialty stat modifiers.\n\
 \t\tTHEY WILL DIFFER SLIGHTLY IN GAME\n\n\n")
         while x < charCount:
 
