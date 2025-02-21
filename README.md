@@ -1,6 +1,6 @@
-# RS3Rando v0.2.1
+# RS3Rando v0.4.0
 
-RS3Rando is a (Currently very WIP) randomizer for the Super Famicom title "Romancing SaGa 3."
+RS3Rando is a (Currently WIP) randomizer for the Super Famicom title "Romancing SaGa 3."
 
 ## Features the following
 
@@ -8,13 +8,18 @@ RS3Rando is a (Currently very WIP) randomizer for the Super Famicom title "Roman
 
 Randomizing stats supports a minimum stat value, a maximum, a BST to aim for, and a variance from the BST the randomizer is allowed to stray off.
 
-* Randomize Proficiency Growths
+* Randomize Weapon Level Growths
 
 Randomize the rate a character's weapon type proficiency will grow.
 
-* Shuffle or Randomize proficiency bases
+* Shuffle or Randomize Weapon Level bases
 
 Change the weapon type proficiencies a character starts with, either by shuffling their vanilla values around, or by completely randomizing them into something new
+
+* Star Sign, Favorite Weapon, Spark type, and modifier Randomization
+
+Change what spark type, favorite weapon, and/or star sign a character has, leading to altered stats.
+You can also change how large the applied modifiers are, but things might get very broken if you're not careful
 
 * ROM copy and Changelog!
 
@@ -25,11 +30,10 @@ Writes the changed stats to a separate ROM file of the user's choosing and to a 
 ## TODO
 
 Add support for more options, such as:
-* Weapon Specialty and Star Sign randomization
-* Changing the modifiers applied by Weapon Specialty and Star Sign
 
 * Technique Discount Bonus
 * Chest Randomization
+* Weapon/Armor stat randomization
 * Possibly more, depending on my understanding of Romancing SaGa 3
 
 
